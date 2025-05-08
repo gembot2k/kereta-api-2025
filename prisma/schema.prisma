@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+//  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id
+  username  String     @unique
+  password  String
+  role      Role       @default(pelanggan)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  pelanggan Pelanggan?
+  petugas   Petugas?
+}
+
+enum Role {
+  petugas
+  pelanggan
+}
+
+model Kereta {
+  id         String    @id
+  namaKereta String
+  deskripsi  String
+  kelas      Kelas
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  jadwal     Jadwal[]
+  gerbong    Gerbong[]
+}
+
+enum Kelas {
+  ekonomi
+  bisnis
+  eksekutif
+  luxury
+}
+
+model Pelanggan {
+  id             String           @id
+  nik            String           @unique
+  namaPenumpang  String
+  alamat         String
+  telp           String
+  userId         String           @unique
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  pembelianTiket PembelianTiket[]
+}
+
+model Petugas {
+  id          String   @id
+  namaPetugas String
+  alamat      String
+  telp        String
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Gerbong {
+  id          String   @id
+  namaGerbong String
+  kuota       Int
+  keretaId    String
+  kereta      Kereta   @relation(fields: [keretaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  kursi       Kursi[]
+}
+
+model Kursi {
+  id                   String                @id
+  noKursi              Int
+  gerbongId            String
+  gerbong              Gerbong               @relation(fields: [gerbongId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  detailPembelianTiket DetailPembelianTiket?
+}
+
+model Jadwal {
+  id                   String           @id
+  asalKeberangkatan    String
+  tujuanKeberangkatan  String
+  tanggalKeberangkatan DateTime
+  tanggalKedatangan    DateTime
+  harga                Int
+  keretaId             String
+  kereta               Kereta           @relation(fields: [keretaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  pembelianTiket       PembelianTiket[]
+}
+
+model PembelianTiket {
+  id                   String                 @id
+  pelangganId          String
+  pelanggan            Pelanggan              @relation(fields: [pelangganId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jadwalId             String
+  jadwal               Jadwal                 @relation(fields: [jadwalId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  detailPembelianTiket DetailPembelianTiket[]
+}
+
+model DetailPembelianTiket {
+  id               String         @id
+  nik              String
+  namaPenumpang    String
+  pembelianTiketId String
+  pembelianTiket   PembelianTiket @relation(fields: [pembelianTiketId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  kursiId          String         @unique
+  kursi            Kursi          @relation(fields: [kursiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
