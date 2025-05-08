@@ -45,10 +45,10 @@ Pastikan MySQL sudah berjalan dan database `db_kereta_api` sudah dibuat.
 
 ```bash
 # Generate Prisma Client
-pnpm prisma generate
+pnpm prisma:generate
 
 # Migrate database schema
-pnpm prisma migrate dev --name init
+pnpm prisma:migrate
 ```
 
 ### 5. Menjalankan Server
