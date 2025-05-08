@@ -1,0 +1,59 @@
++----------+       +------------+       +----------+
+|   User   |       | Pelanggan  |       |  Petugas |
++----------+       +------------+       +----------+
+| id (PK)  |<----->| id (PK)    |       | id (PK)  |
+| username |       | nik        |       | nama     |
+| password |       | nama       |       | alamat   |
+| role     |       | alamat     |       | telp     |
+|          |       | telp       |       | userId   |
+|          |       | userId (FK)|       | (FK)     |
++----------+       +------------+       +----------+
+                         |
+                         |
+                         v
+                  +----------------+
+                  | PembelianTiket |
+                  +----------------+
+                  | id (PK)        |
+                  | pelangganId(FK)|
+                  | jadwalId (FK)  |
+                  +----------------+
+                         |
+                         |
+        +----------------+---------------+
+        |                                |
+        v                                v
++------------------+            +-----------------------+
+|     Jadwal       |            | DetailPembelianTiket  |
++------------------+            +-----------------------+
+| id (PK)          |            | id (PK)               |
+| asalKeberangkatan|            | nik                   |
+| tujuanKeberangkat|            | namaPenumpang         |
+| tanggalBerangkat |            | pembelianTiketId (FK) |
+| tanggalKedatangan|            | kursiId (FK)          |
+| harga            |            |                       |
+| keretaId (FK)    |            |                       |
++------------------+            +-----------------------+
+        |                                |
+        |                                |
+        v                                v
+   +----------+                    +----------+
+   | Kereta   |                    |  Kursi   |
+   +----------+                    +----------+
+   | id (PK)  |                    | id (PK)  |
+   | nama     |                    | noKursi  |
+   | deskripsi|                    | gerbongId|
+   | kelas    |                    | (FK)     |
+   +----------+                    +----------+
+        |                                ^
+        |                                |
+        v                                |
+   +----------+                          |
+   | Gerbong  |--------------------------+
+   +----------+
+   | id (PK)  |
+   | nama     |
+   | kuota    |
+   | keretaId |
+   | (FK)     |
+   +----------+
