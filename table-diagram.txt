@@ -57,3 +57,80 @@
    | keretaId |
    | (FK)     |
    +----------+
+
+
+Penjelasan Relasi Antar Tabel
+1. User dan Identity Management
+
+# User
+Tabel ini menyimpan informasi dasar pengguna, termasuk kredensial login
+Kolom role menentukan apakah user adalah 'pelanggan' atau 'petugas'
+One-to-One relationship dengan tabel Pelanggan dan Petugas
+
+# Pelanggan
+Menyimpan detail informasi pelanggan yang dapat memesan tiket
+Terhubung ke tabel User melalui userId (One-to-One)
+One-to-Many relationship dengan PembelianTiket
+
+# Petugas
+Menyimpan detail informasi petugas yang mengelola sistem
+Terhubung ke tabel User melalui userId (One-to-One)
+
+2. Pemesanan Tiket
+
+# PembelianTiket
+Tabel inti untuk transaksi pembelian tiket
+Menyimpan data pembelian tiket oleh pelanggan untuk jadwal tertentu
+Terhubung dengan tabel Pelanggan melalui pelangganId (Many-to-One)
+Terhubung dengan tabel Jadwal melalui jadwalId (Many-to-One)
+One-to-Many relationship dengan DetailPembelianTiket
+
+# DetailPembelianTiket
+Menyimpan detail penumpang dan kursi yang dipilih dalam satu pembelian tiket
+Memungkinkan pembelian lebih dari satu tiket (multiple seats) dalam satu transaksi
+Terhubung dengan PembelianTiket melalui pembelianTiketId (Many-to-One)
+Terhubung dengan Kursi melalui kursiId (One-to-One)
+Menyimpan informasi identitas penumpang (NIK dan nama)
+
+3. Kereta dan Infrastruktur
+
+# Kereta
+Menyimpan informasi dasar tentang kereta api
+Memiliki atribut kelas (ekonomi, bisnis, eksekutif, luxury)
+One-to-Many relationship dengan Gerbong dan Jadwal
+
+# Gerbong
+Menyimpan informasi tentang gerbong kereta
+Terhubung dengan Kereta melalui keretaId (Many-to-One)
+Memiliki kuota maksimum kursi yang dapat ditambahkan
+One-to-Many relationship dengan Kursi
+
+#Kursi
+Menyimpan informasi tentang kursi di dalam gerbong
+Terhubung dengan Gerbong melalui gerbongId (Many-to-One)
+One-to-One relationship dengan DetailPembelianTiket (saat dipesan)
+
+# Jadwal
+Menyimpan jadwal keberangkatan kereta
+Terhubung dengan Kereta melalui keretaId (Many-to-One)
+Menyimpan rute (asal dan tujuan), waktu, dan harga
+One-to-Many relationship dengan PembelianTiket
+
+
+Alur Bisnis Berdasarkan Relasi
+
+1. Pendaftaran & Autentikasi:
+User mendaftar sebagai pelanggan (create di tabel User dengan role 'pelanggan')
+Data detail pelanggan disimpan di tabel Pelanggan dengan relasi ke User
+
+
+2. Pencarian & Pemesanan:
+Pelanggan melihat jadwal kereta (query dari tabel Jadwal)
+Pelanggan memilih jadwal dan memesan tiket (create di PembelianTiket)
+Untuk setiap penumpang, dibuat entry di DetailPembelianTiket yang terhubung ke kursi tertentu
+
+
+3. Manajemen oleh Petugas:
+Petugas login (query User dengan role 'petugas')
+Petugas dapat CRUD data kereta, gerbong, kursi, dan jadwal
+Petugas dapat melihat laporan pemesanan tiket
